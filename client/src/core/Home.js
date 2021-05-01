@@ -7,6 +7,7 @@ import Typography from '@material-ui/core/Typography';
 import mern from './../assets/images/mern.jpeg';
 import Grid from '@material-ui/core/Grid';
 import auth from './../auth/auth-helper';
+import Newsfeed from './../post/Newsfeed';
 import FindPeople from './../user/FindPeople';
 
 const useStyles = makeStyles((theme) => ({
@@ -67,7 +68,7 @@ export default function Home({history}) {
       {defaultPage && (
         <Grid container spacing={8}>
           <Grid item xs={8} sm={7}>
-            <h1>Newsfeed</h1>
+            <Newsfeed />
           </Grid>
           <Grid item xs={6} sm={5}>
             <FindPeople />

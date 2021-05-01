@@ -17,6 +17,7 @@ import {read} from './api-user.js';
 import {Redirect, Link} from 'react-router-dom';
 import ProfileTabs from './../user/ProfileTabs';
 import FollowProfileButton from './../user/FollowProfileButton';
+import {listByUser} from './../post/api-post.js';
 
 const useStyles = makeStyles((theme) => ({
   root: theme.mixins.gutters({
@@ -29,6 +30,11 @@ const useStyles = makeStyles((theme) => ({
     marginTop: theme.spacing(3),
     color: theme.palette.protectedTitle,
   },
+  bigAvatar: {
+    width: 60,
+    height: 60,
+    margin: 10,
+  },
 }));
 
 export default function Profile({match}) {
@@ -40,6 +46,7 @@ export default function Profile({match}) {
   });
   const [user, setUser] = useState({});
   const [redirectToSignin, setRedirectToSignin] = useState(false);
+  const [posts, setPosts] = useState([]);
   const jwt = auth.isAuthenticated();
 
   useEffect(() => {
@@ -59,6 +66,7 @@ export default function Profile({match}) {
         let following = checkFollow(data);
         setValues({...values, user: data, following: following});
         setUser(data);
+        loadPosts(data._id);
       }
     });
 
@@ -91,7 +99,28 @@ export default function Profile({match}) {
       }
     });
   };
-
+  const loadPosts = (user) => {
+    listByUser(
+      {
+        userId: user,
+      },
+      {
+        t: jwt.token,
+      }
+    ).then((data) => {
+      if (data.error) {
+        console.log(data.error);
+      } else {
+        setPosts(data);
+      }
+    });
+  };
+  const removePost = (post) => {
+    const updatedPosts = posts;
+    const index = updatedPosts.indexOf(post);
+    updatedPosts.splice(index, 1);
+    setPosts(updatedPosts);
+  };
   const photoUrl = user._id
     ? `http://localhost:3000/api/users/photo/${
         user._id
@@ -109,7 +138,7 @@ export default function Profile({match}) {
       <List dense>
         <ListItem>
           <ListItemAvatar>
-            <Avatar src={photoUrl} />
+            <Avatar src={photoUrl} className={classes.bigAvatar} />
           </ListItemAvatar>
           <ListItemText primary={user.name} secondary={user.email} />{' '}
           {auth.isAuthenticated().user &&
@@ -137,7 +166,11 @@ export default function Profile({match}) {
           />
         </ListItem>
       </List>
-      <ProfileTabs user={values.user} />
+      <ProfileTabs
+        user={values.user}
+        posts={posts}
+        removePostUpdate={removePost}
+      />
     </Paper>
   );
 }

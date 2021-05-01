@@ -5,6 +5,7 @@ import Typography from '@material-ui/core/Typography';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import FollowGrid from './../user/FollowGrid';
+import PostList from './../post/PostList';
 
 export default function ProfileTabs(props) {
   const [tab, setTab] = useState(0);
@@ -30,7 +31,7 @@ export default function ProfileTabs(props) {
       </AppBar>
       {tab === 0 && (
         <TabContainer>
-          <h3>Posts</h3>
+          <PostList removeUpdate={props.removePostUpdate} posts={props.posts} />
         </TabContainer>
       )}
       {tab === 1 && (
@@ -49,6 +50,8 @@ export default function ProfileTabs(props) {
 
 ProfileTabs.propTypes = {
   user: PropTypes.object.isRequired,
+  removePostUpdate: PropTypes.func.isRequired,
+  posts: PropTypes.array.isRequired,
 };
 
 const TabContainer = (props) => {
